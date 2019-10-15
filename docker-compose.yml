@@ -1,0 +1,76 @@
+version: '2'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3336:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: api_db
+      MYSQL_USER: dockerUser
+      MYSQL_PASSWORD: dockerPassword
+    volumes:
+      - db:/var/lib/mysql
+
+  db-test:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3337:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: api_db_test
+      MYSQL_USER: dockerUser
+      MYSQL_PASSWORD: dockerPassword
+    volumes:
+      - db-test:/var/lib/mysql
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6338:6379"
+    volumes:
+      - redis:/data
+
+  elasticsearch:
+    image: elasticsearch:5.6
+    restart: always
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+  
+  # cp-kibana:
+  #   image: kibana:5.6
+  #   restart: always
+  #   ports:
+  #     - "5601:5601"
+  #   environment:
+  #     ELASTICSEARCH_URL: http://cp-elasticsearch:9200
+
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:3000"
+    environment:
+      NODE_ENV: "dockerDev"
+      PORT: 3000
+    volumes:
+      - ./:/usr/src/app
+    depends_on:
+      - db
+      - redis
+      - elasticsearch
+    command: bash -c "/usr/local/scripts/wait-for-it.sh db:3306 -- yarn install && yarn run sequelize db:migrate -- --env=development && yarn run dev"
+
+volumes:
+  db:
+  db-test:
+  elasticsearch:
+  redis:
