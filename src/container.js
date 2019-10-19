@@ -3,6 +3,7 @@ const { scopePerRequest } = require('awilix-express');
 
 const config = require('../config');
 const Application = require('./app/Application');
+
 const {
   CreateUser,
   GetAllUsers,
@@ -11,7 +12,16 @@ const {
   DeleteUser
 } = require('./app/user');
 
+const {
+  CreatePlace,
+  GetAllPlaces,
+  GetPlace,
+  UpdatePlace,
+  DeletePlace
+} = require('./app/place');
+
 const UserSerializer = require('./interfaces/http/user/UserSerializer');
+const PlaceSerializer = require('./interfaces/http/place/PlaceSerializer');
 
 const Server = require('./interfaces/http/Server');
 const router = require('./interfaces/http/router');
@@ -22,7 +32,12 @@ const swaggerMiddleware = require('./interfaces/http/swagger/swaggerMiddleware')
 
 const logger = require('./infra/logging/logger');
 const SequelizeUsersRepository = require('./infra/user/SequelizeUsersRepository');
-const { database, User: UserModel } = require('./infra/database/models');
+const SequelizePlacesRepository = require('./infra/place/SequelizePlacesRepository');
+const {
+  database,
+  User: UserModel,
+  Place: PlaceModel
+} = require('./infra/database/models');
 
 const container = createContainer();
 
@@ -53,16 +68,20 @@ container
 
 // Repositories
 container.register({
-  usersRepository: asClass(SequelizeUsersRepository).singleton()
+  usersRepository: asClass(SequelizeUsersRepository).singleton(),
+  placesRepository: asClass(SequelizePlacesRepository).singleton()
 });
 
 // Database
 container.register({
   database: asValue(database),
-  UserModel: asValue(UserModel)
+  UserModel: asValue(UserModel),
+  PlaceModel: asValue(PlaceModel)
 });
 
-// Operations
+// --- Operations ---
+
+// Users
 container.register({
   createUser: asClass(CreateUser),
   getAllUsers: asClass(GetAllUsers),
@@ -71,9 +90,20 @@ container.register({
   deleteUser: asClass(DeleteUser)
 });
 
+// Places
+container.register({
+  createPlace: asClass(CreatePlace),
+  getAllPlaces: asClass(GetAllPlaces),
+  getPlace: asClass(GetPlace),
+  updatePlace: asClass(UpdatePlace),
+  deletePlace: asClass(DeletePlace)
+});
+// END :: Operations
+
 // Serializers
 container.register({
-  userSerializer: asValue(UserSerializer)
+  userSerializer: asValue(UserSerializer),
+  placeSerializer: asValue(PlaceSerializer)
 });
 
 module.exports = container;

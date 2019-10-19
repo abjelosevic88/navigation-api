@@ -1,19 +1,27 @@
-const EventEmitter = require('events');
 const define = Object.defineProperty;
+const { ERRORS } = require('src/interfaces/http/utils/consts');
 
-class Operation extends EventEmitter {
+class Operation {
+  constructor() {
+    this.ERRORS = ERRORS;
+  }
+
   static setOutputs(outputs) {
     define(this.prototype, 'outputs', {
       value: createOutputs(outputs)
     });
   }
 
-  on(output, handler) {
-    if(this.outputs[output]) {
-      return this.addListener(output, handler);
+  response(status, payload = {}, error = null) {
+    if(this.outputs[status]) {
+      return {
+        status,
+        payload: payload ? payload : {},
+        error: error ? new Error(error) : null
+      };
     }
 
-    throw new Error(`Invalid output "${output}" to operation ${this.constructor.name}.`);
+    throw new Error(`Invalid output "${status}" to operation ${this.constructor.name}.`);
   }
 }
 

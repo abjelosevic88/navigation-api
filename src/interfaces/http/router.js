@@ -40,6 +40,8 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
 
   apiRouter.use('/users', controller('user/UsersController'));
 
+  apiRouter.use('/places', controller('place/PlacesController'));
+
   router.use('/api', apiRouter);
 
   router.use(errorHandler);

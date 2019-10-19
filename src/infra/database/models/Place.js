@@ -1,9 +1,17 @@
 'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  const User = sequelize.define('user', {
+  const Place = sequelize.define('place', {
     name: {
       type: DataTypes.STRING
+    },
+    latitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: false
+    },
+    longitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: false
     }
   }, {
     classMethods: {
@@ -15,5 +23,5 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: true
   });
 
-  return User;
+  return Place;
 };

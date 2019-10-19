@@ -4,7 +4,7 @@ const User = attributes({
   id: Number,
   name: {
     type: String,
-    required: true
+    required: true,
   },
   age: Number
 })(class User {

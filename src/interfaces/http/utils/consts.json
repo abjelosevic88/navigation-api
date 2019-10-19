@@ -1,0 +1,6 @@
+{
+  "ERRORS": {
+    "NOT_FOUND": "NOT_FOUND_ERROR",
+    "VALIDATION": "VALIDATION_ERROR"
+  }
+}
